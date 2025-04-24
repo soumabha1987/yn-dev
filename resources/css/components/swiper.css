@@ -1,0 +1,20 @@
+@import "swiper/css/bundle";
+
+:root {
+    --swiper-pagination-color: #4f46e5;
+    --swiper-theme-color: #7e75fa;
+    --swiper-navigation-size: 24px;
+    --swipwe-background-color: #f8fafc;
+}
+
+.swiper-3d .swiper-slide-shadow {
+    background:  #f8fafc;
+}
+
+.parallax-bg {
+    @apply absolute inset-0 h-full bg-slate-50;
+    width: 130%;
+    -webkit-background-size: cover;
+    background-size: cover;
+    background-position: center;
+}

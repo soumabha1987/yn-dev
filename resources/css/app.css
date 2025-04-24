@@ -1,0 +1,14 @@
+@import 'tailwindcss/base';
+@import './base.css';
+
+@import 'tailwindcss/components';
+@import './components.css';
+
+@import "tailwindcss/utilities";
+:root {
+    --primary-50: 16, 185, 129;
+}
+
+#confetti canvas {
+  z-index: 1000;
+}

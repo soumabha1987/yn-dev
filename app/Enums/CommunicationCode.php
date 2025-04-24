@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+use App\Enums\Traits\Values;
+
+enum CommunicationCode: string
+{
+    use Values;
+
+    case WELCOME = 'W-1';
+    case NEW_ACCOUNT = 'N-1';
+    case COUNTER_OFFER_BUT_NO_RESPONSE = 'CO-2';
+    case OFFER_APPROVED_BUT_NO_PAYMENT_SETUP = 'O-1';
+    case PAY_IN_PIF_AND_PAYMENT_SETUP_DONE = 'O-2';
+    case PAY_IN_INSTALLMENT_AND_PAYMENT_SETUP_DONE = 'O-3';
+    case OFFER_DECLINED = 'O-4';
+    case PAYMENT_FAILED_WHEN_INSTALLMENT = 'PP-1';
+    case PAYMENT_FAILED_MOVE_TO_SKIP = 'PP-2';
+    case FIVE_DAYS_UPCOMING_PAYMENT_REMINDER = 'PP-3';
+    case CRON_PAYMENT_SUCCESSFUL = 'PP-4';
+    case CREDITOR_REMOVED_ACCOUNT = 'G-1';
+    case BALANCE_PAID = 'G-2';
+    case ECO_MAIL_RECEIVED = 'ECO-1';
+    case CFPB_ECO_MAIL = 'ECO-C1';
+    case UPDATE_PAY_TERMS_OFFER = 'T-1';
+    case PAYMENT_FAILED_WHEN_PIF = 'O';
+    case THREE_DAY_EXPIRATION_DATE_REMINDER = 'PR-1';
+    case ONE_DAY_EXPIRATION_DATE_REMINDER = 'PR-2';
+    case ONE_DAY_UPCOMING_PAYMENT_REMINDER = 'UP-1';
+    case HELPING_HAND_FULL_PAY_SETTLED = 'HP-1';
+    case HELPING_HAND_PAY_FULL_CURRENT_BALANCE = 'HP-2';
+    case HELPING_HAND_SUCCESSFUL_PAYMENT = 'HP-3';
+    case TWICE_TIME_CONTINUES_SKIP_FAILED_TRANSACTION = 'PF-1';
+}

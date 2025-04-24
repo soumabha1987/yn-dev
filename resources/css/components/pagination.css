@@ -1,0 +1,3 @@
+.pagination {
+    @apply font-medium flex text-slate-600
+}

@@ -1,0 +1,31 @@
+@keyframes loader-line-animation {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.loader-line {
+    animation: loader-line-animation 1.5s infinite;
+}
+
+@keyframes blink-animation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+}
+
+.blink {
+    animation: blink-animation 1.5s linear infinite;
+}

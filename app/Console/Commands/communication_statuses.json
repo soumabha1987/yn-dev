@@ -1,0 +1,170 @@
+[
+    {
+        "code": "W-1",
+        "description": "General Welcome Email - New Unique \"Consumer PII\" Uploaded.",
+        "trigger_description": "System detects a new consumer with unique PII. (Last 4 of SSN / DoB / Last Name)",
+        "trigger_type": 1,
+        "priority": 1
+    },
+    {
+        "code": "N-1",
+        "description": "New Account uploaded for an Existing Consumer PII.",
+        "trigger_description": "System detects a new original account matching an existing Consumer PII.",
+        "trigger_type": 1,
+        "priority": 2
+    },
+    {
+        "code": "T-1",
+        "description": "Creditor Offer Change- (upload CSV or manually) the consumer's Pay Term Offer on an existing Original Account number.",
+        "trigger_description": "The creditor updates the terms manually or by upload it sends this to the consumer to let them know.",
+        "trigger_type": 3,
+        "priority": 3
+    },
+    {
+        "code": "G-1",
+        "description": "Removed / Creditor Removed Consumer Account",
+        "trigger_description": "Creditor Removed Account",
+        "trigger_type": 1,
+        "priority": 4
+    },
+    {
+        "code": "ECO-1",
+        "description": "New ecoMail in Consumers EcoBox.",
+        "trigger_description": "New EcoLetter delivered in consumer ecoMailbox",
+        "trigger_type": 1,
+        "priority": 5
+    },
+    {
+        "code": "ECO-C1",
+        "description": "Consumer has not opened their CFPB EcoLetter.",
+        "trigger_description": "Unopened CFPB letter",
+        "trigger_type": 1,
+        "priority": 6
+    },
+    {
+        "code": "CO-2",
+        "description": "Negotiations/Creditor Sends Consumer Counter Offer / Not opened",
+        "trigger_description": "Consumer has new creditor counter offer to review/ Not yet reviewed",
+        "trigger_type": 3,
+        "priority": 7
+    },
+    {
+        "code": "O-1",
+        "description": "Creditor Approved Consumer Offer/Negotiated Payment Pending.",
+        "trigger_description": "Creditor or Consumer Approved  Offer/no pay method on file.",
+        "trigger_type": 3,
+        "priority": 8
+    },
+    {
+        "code": "O-2",
+        "description": "Negotiated Settlement/ Consumer included pay method on offer. Payment Processed Successfully.",
+        "trigger_description": "Negotiated Settlement (PIF)/ Payment processes successfully /Account Settled.",
+        "trigger_type": 1,
+        "priority": 9
+    },
+    {
+        "code": "O-3",
+        "description": "Negotiated Payment Plan/ Consumer included pay method on offer. Plan Auto Sets Up.",
+        "trigger_description": "Negotiated PP/AAuto set up Plan with card included in offer/Active Payment Plan.",
+        "trigger_type": 1,
+        "priority": 10
+    },
+    {
+        "code": "O",
+        "description": "Negotiated Settlement/ Consumer included pay method on offer. Payment Fails.",
+        "trigger_description": "Negotiated Settlement (PIF)/ Payment Processes on agreed date/Payment Method Fails.",
+        "trigger_type": 3,
+        "priority": 11
+    },
+    {
+        "code": "O-4",
+        "description": "Creditor Denied Consumer Offer. Consumer needs to log back in to manage account.",
+        "trigger_description": "Creditor Denied Consumer Offer.",
+        "trigger_type": 3,
+        "priority": 12
+    },
+    {
+        "code": "PR-1",
+        "description": "Negotiated/ Pending Payment Method,  3-day Expiration date reminder.",
+        "trigger_description": "Reminder Pending Payment Method.",
+        "trigger_type": 1,
+        "priority": 13
+    },
+    {
+        "code": "PR-2",
+        "description": "Negotiated/Pending Payment Method,  1- day Expiration date reminder.",
+        "trigger_description": "Reminder Pending Payment Method.",
+        "trigger_type": 1,
+        "priority": 14
+    },
+    {
+        "code": "PP-1",
+        "description": "Active Payment Plan /Failed Payment",
+        "trigger_description": "Payment Failed",
+        "trigger_type": 1,
+        "priority": 15
+    },
+    {
+        "code": "PP-2",
+        "description": "Active Payment Plan /YN Moves a payment to back of plan",
+        "trigger_description": "Payment failed too long, so it was moved to end of plan and re-scheduled.",
+        "trigger_type": 1,
+        "priority": 16
+    },
+    {
+        "code": "PP-3",
+        "description": "Upcoming Payment Reminder - 5 days before payment is due. (payment plan or settlement payment)",
+        "trigger_description": "Payment is upcoming in 5 days",
+        "trigger_type": 1,
+        "priority": 17
+    },
+    {
+        "code": "UP-1",
+        "description": "Upcoming Payment Reminder - 1 day reminder (payment plan or settlement payment)",
+        "trigger_description": "Payment is processing tomorrow- 1 day.",
+        "trigger_type": 1,
+        "priority": 18
+    },
+    {
+        "code": "PP-4",
+        "description": "Payment Plan Payment successfully processed.",
+        "trigger_description": "Payment Plan, recurring payment was processed successfully.",
+        "trigger_type": 1,
+        "priority": 19
+    },
+    {
+        "code": "G-2",
+        "description": "Paid Off/ Payment Plan - last payment successful.",
+        "trigger_description": "Paid Off/ Payment Plan - last payment successful.",
+        "trigger_type": 1,
+        "priority": 20
+    },
+    {
+        "code": "PF-1",
+        "description": "Payment Plan - 2 consecutive months YN auto skips payments (failed/auto skipped)",
+        "trigger_description": "Payment Plan - 2 consecutive months YN auto skips payments (failed/auto skipped)",
+        "trigger_type": 1,
+        "priority": 21
+    },
+    {
+        "code": "HP-1",
+        "description": "Helping Hand Settlement Payment/ Settled!",
+        "trigger_description": "Some pays the settlement offer using the helping hand link.",
+        "trigger_type": 1,
+        "priority": 22
+    },
+    {
+        "code": "HP-2",
+        "description": "Helping Hand PP Current Balance Paid.",
+        "trigger_description": "Someone pays the current balance due on a payment plan using the hel;ping hand link.",
+        "trigger_type": 1,
+        "priority": 23
+    },
+    {
+        "code": "HP-3",
+        "description": "Helping Hand Payment/ Pay Plan Payment.",
+        "trigger_description": "Plan still has a current balance due.",
+        "trigger_type": 1,
+        "priority": 24
+    }
+]

@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Livewire\Attributes\Rule;
+use Livewire\Form;
+
+class DummyClass extends Form
+{
+     public function rules(): array
+     {
+        return [
+
+        ];
+     }
+}

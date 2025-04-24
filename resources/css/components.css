@@ -1,0 +1,21 @@
+@import "./components/button.css";
+@import "./components/avatar.css";
+@import "./components/tooltip.css";
+@import "./components/card.css";
+@import "./components/form.css";
+@import "./components/table.css";
+@import "./components/pagination.css";
+@import "./components/quill.css";
+@import "./components/badge.css";
+@import "./components/steps.css";
+@import "./components/simplebar.css";
+@import "./components/flatpickr.css";
+@import "./components/skeleton.css";
+@import "./components/tom-select.css";
+@import "./components/mask.css";
+@import "./components/animate.css";
+
+.prose :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    margin-top: 0em !important;
+    margin-bottom: 0em !important;
+}

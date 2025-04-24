@@ -1,0 +1,113 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The Laravel Framework.",
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-soap": "*",
+        "ext-zip": "*",
+        "authorizenet/authorizenet": "^2.0",
+        "barryvdh/laravel-debugbar": "^3.14",
+        "barryvdh/laravel-dompdf": "^2.0",
+        "blade-ui-kit/blade-heroicons": "^2.1",
+        "doctrine/dbal": "^3.7",
+        "filament/notifications": "^3.2",
+        "guzzlehttp/guzzle": "^7.2",
+        "jundelleb/laravel-usaepay": "dev-develop",
+        "laravel/framework": "^10.31",
+        "laravel/tinker": "^2.8",
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "league/flysystem-sftp-v3": "^3.0",
+        "livewire/livewire": "^3.5",
+        "maatwebsite/excel": "^3.1",
+        "mallardduck/blade-lucide-icons": "^1.11",
+        "opcodesio/log-viewer": "^3.12",
+        "propaganistas/laravel-phone": "^5.1",
+        "ricorocks-digital-agency/soap": "^1.7",
+        "sentry/sentry-laravel": "^3.4",
+        "spatie/laravel-permission": "^6.4",
+        "stripe/stripe-php": "^7.97"
+    },
+    "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.13",
+        "brianium/paratest": "^7.4",
+        "fakerphp/faker": "^1.9.1",
+        "larastan/larastan": "^2.7",
+        "laravel/pint": "^1.10",
+        "laravel/telescope": "^4.15",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.0",
+        "spatie/laravel-ignition": "^2.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/SagarNaliyapara/laravel-usaepay"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": [
+                "laravel/telescope",
+                "barryvdh/laravel-ide-helper"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta",
+            "@php artisan ide-helper:models -M"
+        ],
+        "test": "@php artisan test -p",
+        "phpstan": "php artisan optimize:clear && phpstan analyze",
+        "pint": "vendor/bin/pint",
+        "format": "php artisan optimize:clear && vendor/bin/pint && phpstan analyze && php artisan test -p && GREEN='\\033[0;32m' && printf \"${GREEN}Congrats! All good. You can push now.\n\""
+    }
+}

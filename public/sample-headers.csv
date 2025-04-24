@@ -1,0 +1,31 @@
+Upload Validations,YouNegotiate Header Fields,Data Description,Mandatory Field,More Info
+,Original Account Name (Known by Consumer)*,"Alpha Numeric - No Special Characters - Max Length 50 - Unique",Y,This is the name on the account - recognized by consumer
+V1,Original Account Number (Known by Consumer)*,"Alpha Numeric - No Special Characters - Max Length 50 - Unique",Y,"Original Acct # used for tracking through multiple Members/eliminating duplicates and reporting to credit bureau as required. To delete an account in your membership, upload a record with the Original Account Number. "
+,Consumer First Name * ,Alphabetic - No Special Characters - No Limit,Y,
+,Consumer Last Name*,Alphabetic - No Special Characters - No Limit,Y,"Secure Access Data Field - Consumer portal delivery address is last name, DOB and last 4-digits SSN"
+,Date Of Birth* ,Date format - Which is selected when uploading,Y,You will choose the format of the DOB in your file for accurate consumer mapping into YouNegotiate
+,Last Four SSN or Full Social* ,Numeric - Length 4 or 9 characters ,Y,YN accepts both 4 and 9 digit SSN. Only last 4 are mapped into YN.
+,Consumer Mobile Phone*,Numeric - Max Length 10,Y,Link sent to consumer member has placed their account in the consumer portal.
+,Consumer Email* ,Alphabetic - Email Validation,Y,Link sent to consumer member has placed their account in the consumer portal.
+V2,Beginning Account Balance*,Numeric - Float (Example: 200.10) - No Limit,Y,Beg balance due to Member -Current Balance on Consumer Offer
+V3,Member Account Number (If blank defaults to Original account #),"Alpha Numeric - No Special Characters -Max Length 50 - Unique",C,This field is optional for your reporting. All duplicate validations and tracking will be based on the Original account number. This assures the consumer can manage one account regardless of where it is placed.
+V4,Sub client Identification Number (ID),Alpha Numeric - ,N,"An ACCT ID the member has for a client or division- used to create payment term offers, terms and conditions, reporting"
+,Sub Client Name,Alphabetic - No Special Characters - No Limit,N,Reporting
+,Sub Client  Account Number,"Alpha Numeric - No Special Characters -Max Length 50 - Has to be Unique",N,Reporting
+,Reference Number,Alphabetic - No Special Characters - No Limit,N,Optional
+,Placement Date,Date format - Which is you selected when uploading,N,"Reporting, creating group terms"
+,Expiry Date,Date format - Which is you selected when uploading,N,"Reporting, creating group terms"
+,Address Line 1,Alpha Numeric - No Special Characters - No Limit,N,May be used when creating secure EcoCommunication templates
+,Address Line 2,Alpha Numeric - No Special Characters - No Limit,N,May be used when creating secure EcoCommunication templates
+,City,Alphabetic - No Special Characters - Max Length 191,N,May be used when creating secure EcoCommunication templates
+,State,Alphabetic - No Special Characters - Max Length 191,N,May be used when creating secure EcoCommunication templates
+,Zip,"Numeric minimum 5 numbers - 4 additional numbers 95125-0128",N,May be used when creating secure EcoCommunication templates
+,Pay In Full Discount % (override Master/Sub Pay Term Offers),"Numeric - greater than zero, less than 101",N,Override Sub and Master Terms
+,Payment Plan - Bal Discount % (override Master/Sub Pay Term Offers),"Numeric - greater than zero, less than 102",N,Override Sub and Master Terms
+,Payment Plan/Min. Mthly Payment % of Bal (override Master/Sub Pay Term Offers),"Numeric - greater than zero, less than 103",N,Override Sub and Master Terms
+,Payment Plan/Max Days First Pay (override Master/Sub Pay Term Offers),Numeric - greater or equal to 365,N,Override Sub and Master Terms
+,Passthrough Field 1,,N,Reporting and Tracking
+,Passthrough Field 2, ,N,Reporting and Tracking
+,Passthrough Field 3,,N,Reporting and Tracking
+,Passthrough Field 4,,N,Reporting and Tracking
+,Passthrough Field 5,,N,Reporting and Tracking
