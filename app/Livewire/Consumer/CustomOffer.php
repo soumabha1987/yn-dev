@@ -8,16 +8,13 @@ use App\Enums\ConsumerStatus;
 use App\Enums\NegotiationType;
 use App\Livewire\Consumer\Forms\CustomOfferForm;
 use App\Livewire\Consumer\Traits\ValidateCounterOffer;
-use App\Models\Consumer;
-use App\Models\ConsumerNegotiation;
-use App\Services\CampaignTrackerService;
 use App\Services\Consumer\DiscountService;
-use App\Services\Consumer\ScheduleTransactionService;
-use App\Services\ConsumerService;
+use App\Services\Consumer\ConsumerNegotiationService;
+use App\Models\Consumer;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+
 
 #[Layout('components.consumer.app-layout')]
 class CustomOffer extends Component
@@ -35,10 +32,12 @@ class CustomOffer extends Component
     public float $minimumPifDiscountedAmount;
 
     protected DiscountService $discountService;
+    protected ConsumerNegotiationService $consumerNegotiationService;
 
     public function __construct()
     {
         $this->discountService = app(DiscountService::class);
+        $this->consumerNegotiationService = app(ConsumerNegotiationService::class);
     }
 
     public function boot(): void
@@ -59,94 +58,24 @@ class CustomOffer extends Component
         $this->form->init($this->type, $this->consumer);
     }
 
+
     public function createCustomOffer(): void
     {
         $validatedData = $this->form->validate();
-
-        $amount = (float) $validatedData['amount'];
-
-        if ($amount > $this->minimumPifDiscountedAmount && $validatedData['negotiation_type'] === NegotiationType::PIF->value) {
-            $amount = $this->minimumPifDiscountedAmount;
-        }
-
-        if ($amount > $this->minimumPpaDiscountedAmount && $validatedData['negotiation_type'] === NegotiationType::INSTALLMENT->value) {
-            $amount = $this->minimumPpaDiscountedAmount;
-        }
-
-        $installments = null;
-        $lastInstallmentAmount = null;
-        $negotiationTypeIsInstallment = $validatedData['negotiation_type'] === NegotiationType::INSTALLMENT->value;
-
-        if ($negotiationTypeIsInstallment) {
-            [$installments, $lastInstallmentAmount] = $this->discountService->calculateInstallments($this->minimumPpaDiscountedAmount, $amount);
-        }
-
-        ConsumerNegotiation::query()->updateOrCreate(
-            [
-                'company_id' => $this->consumer->company_id,
-                'consumer_id' => $this->consumer->id,
-            ],
-            [
-                'first_pay_date' => $validatedData['first_pay_date'],
-                'reason' => filled($validatedData['reason']) ? $validatedData['reason'] : null,
-                'note' => filled($validatedData['note']) ? $validatedData['note'] : null,
-                'negotiation_type' => $validatedData['negotiation_type'],
-                'installment_type' => $negotiationTypeIsInstallment ? $validatedData['installment_type'] : null,
-                'one_time_settlement' => $negotiationTypeIsInstallment ? null : number_format($amount, 2, thousands_separator: ''),
-                'no_of_installments' => $installments,
-                'active_negotiation' => true,
-                'monthly_amount' => number_format($validatedData['amount'], 2, thousands_separator: ''),
-                'negotiate_amount' => $negotiationTypeIsInstallment ? number_format($this->minimumPpaDiscountedAmount, 2, thousands_separator: '') : null,
-                'last_month_amount' => $lastInstallmentAmount ? number_format((float) $lastInstallmentAmount, 2, thousands_separator: '') : null,
-            ]
+        $newOfferCount = $this->consumerNegotiationService->updateConsumerNegotiation(
+            $this->consumer,
+            $validatedData,
+            $this->form->isOfferAccepted,
+            $this->minimumPifDiscountedAmount,
+            $this->minimumPpaDiscountedAmount
         );
 
-        $this->consumer->refresh()->consumerNegotiation->fill([
-            'offer_accepted' => false,
-        ]);
-
-        $this->consumer->fill([
-            'offer_accepted' => false,
-            'status' => ConsumerStatus::PAYMENT_SETUP,
-            'custom_offer' => true,
-            'counter_offer' => false,
-        ]);
-
-        $this->form->isOfferAccepted = $this->isOfferAccepted($validatedData);
-
-        $campaignTrackerUpdateFieldName = 'custom_offer_count';
-
-        if ($this->form->isOfferAccepted) {
-            $this->consumer->consumerNegotiation->fill([
-                'offer_accepted' => true,
-            ]);
-            $this->consumer->fill([
-                'status' => ConsumerStatus::PAYMENT_ACCEPTED,
-                'offer_accepted' => true,
-                'custom_offer' => false,
-            ]);
-
-            $campaignTrackerUpdateFieldName = $validatedData['negotiation_type'] === NegotiationType::PIF->value
-                ? 'pif_completed_count'
-                : 'ppl_completed_count';
-        }
-
-        $this->consumer->consumerNegotiation->save();
-        $this->consumer->save();
-
-        if (! $this->form->isOfferAccepted) {
-            Cache::put(
-                'new_offer_count_' . $this->consumer->company_id,
-                $newOfferCount = app(ConsumerService::class)->getCountOfNewOffer($this->consumer->company_id),
-                now()->addHour(),
-            );
-
+        if ($newOfferCount !== null) {
             $this->dispatch('new-offer-count-updated', $newOfferCount);
         }
 
-        app(CampaignTrackerService::class)->updateTrackerCount($this->consumer, $campaignTrackerUpdateFieldName);
 
-        app(ScheduleTransactionService::class)->deleteScheduled($this->consumer->id);
+        $this->form->isOfferAccepted = $this->consumerNegotiationService->isOfferAccepted($this->consumer, $validatedData,  $this->minimumPpaDiscountedAmount);
 
         $this->form->offerSent = $this->form->isOfferAccepted === false;
     }

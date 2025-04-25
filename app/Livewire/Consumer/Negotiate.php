@@ -14,6 +14,7 @@ use App\Models\ConsumerNegotiation;
 use App\Services\CampaignTrackerService;
 use App\Services\Consumer\DiscountService;
 use App\Services\Consumer\ReasonService;
+use App\Services\Consumer\ConsumerNegotiationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Validator;
 use Livewire\Attributes\Layout;
@@ -34,12 +35,17 @@ class Negotiate extends Component
     protected DiscountService $discountService;
 
     protected CampaignTrackerService $campaignTrackerService;
+    protected ConsumerNegotiationService $consumerNegotiationService;
+
+    public float $minimumPpaDiscountedAmount;
+
+    public float $minimumPifDiscountedAmount;
 
     public function __construct()
     {
         $this->discountService = app(DiscountService::class);
-
         $this->campaignTrackerService = app(CampaignTrackerService::class);
+        $this->consumerNegotiationService = app(ConsumerNegotiationService::class);
     }
 
     public function boot(): void
@@ -62,6 +68,9 @@ class Negotiate extends Component
         if (! in_array($this->consumer->status, [ConsumerStatus::JOINED, ConsumerStatus::NOT_PAYING])) {
             $this->redirectRoute('consumer.account', navigate: true);
         }
+
+        $this->minimumPpaDiscountedAmount = $this->discountService->fetchAmountToPayWhenPpa($this->consumer);
+        $this->minimumPifDiscountedAmount = $this->discountService->fetchAmountToPayWhenPif($this->consumer)['discount'];
     }
 
     public function createSettlementOffer(): void
@@ -157,5 +166,35 @@ class Negotiate extends Component
                 'reasons' => app(ReasonService::class)->fetch(),
             ])
             ->title(__('Let\'s Negotiate'));
+    }
+
+    public function sendToCreditor()
+    {
+        $validatedData = $this->validate([
+            'first_pay_date' => ['required']
+        ]);
+        $installmentDetails = $this->discountService->fetchInstallmentDetails($this->consumer);
+
+
+        $newOfferCount = $this->consumerNegotiationService->updateConsumerNegotiation(
+            $this->consumer,
+            [
+                'negotiation_type' =>  "installment",
+                'installment_type' => "monthly",
+                'amount' => $installmentDetails['monthly_amount'],
+                'first_pay_date' => $validatedData['first_pay_date'],
+                'reason' => null,
+                'note' => null
+            ],
+            false,
+            $this->minimumPifDiscountedAmount,
+            $this->minimumPpaDiscountedAmount
+        );
+
+        if ($newOfferCount !== null) {
+            $this->dispatch('new-offer-count-updated', $newOfferCount);
+        }
+        $this->success(__('Offer Sent successfully.'));
+        $this->redirectRoute('consumer.account');
     }
 }

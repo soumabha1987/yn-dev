@@ -46,7 +46,7 @@ class Payment extends Component
 
     protected DiscountService $discountService;
 
-   
+
     public function __construct()
     {
         $this->discountService = app(DiscountService::class);
@@ -170,8 +170,8 @@ class Payment extends Component
 
             Session::put(
                 $this->userIsComeForPifPayment()['user_is_come_for_pif_payment'] && $this->consumer->status === ConsumerStatus::SETTLED
-                ? 'complete-payment'
-                : 'complete-payment-setup',
+                    ? 'complete-payment'
+                    : 'complete-payment-setup',
                 true
             );
 
@@ -218,7 +218,7 @@ class Payment extends Component
             'accountBalance' => $accountBalance,
             'installments' => $installments,
             'savedCards' => $savedCards
-            
+
         ])->title($title);
     }
 
@@ -253,5 +253,4 @@ class Payment extends Component
             $this->error(__('Failed to delete the card.'));
         }
     }
-
 }
