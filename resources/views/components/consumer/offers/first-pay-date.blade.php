@@ -24,6 +24,10 @@
             max-width: 100% !important;
             min-width: auto;
         }
+        .flatpickr-current-month
+        {
+            justify-content: center;
+        }
 
         .flatpickr-day {
             max-width: none;
@@ -174,29 +178,35 @@
                     const date = dayElem.dateObj;
                     const min = new Date(minFirstPayDate);
                     const max = new Date(maxFirstPayDate);
+                    const currentDate = new Date();
 
                     // Strip time portion
                     const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                     const minOnly = new Date(min.getFullYear(), min.getMonth(), min.getDate());
                     const maxOnly = new Date(max.getFullYear(), max.getMonth(), max.getDate());
 
-                    // ✅ Hide days outside current month
-                    if (date.getMonth() !== fp.currentMonth) {
-                        dayElem.style.visibility = "hidden"; // 👈 Hide the day completely
-                        return;
-                    }
-
-                    if (dateOnly >= minOnly && dateOnly <= maxOnly) {
-                        dayElem.classList.add('bg-green-500', 'text-black', 'font-semibold');
+                     if (dateOnly < currentDate) {
+                        dayElem.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
+                        dayElem.style.pointerEvents = "none"; // Prevent selection
                     } else {
-                        dayElem.classList.add('bg-yellow-500', 'text-black', 'font-semibold', 'cursor-pointer');
-                        dayElem.addEventListener('click', () => {
-                            window.dispatchEvent(new CustomEvent('invalid-date-clicked', {
-                                detail: {
-                                    date: dateOnly.toISOString().split('T')[0]
-                                }
-                            }));
-                        });
+                        // ✅ Hide days outside current month
+                        if (date.getMonth() !== fp.currentMonth) {
+                            dayElem.style.visibility = "hidden"; // 👈 Hide the day completely
+                            return;
+                        }
+
+                        if (dateOnly >= minOnly && dateOnly <= maxOnly) {
+                            dayElem.classList.add('bg-green-500', 'text-black', 'font-semibold');
+                        } else {
+                            dayElem.classList.add('bg-yellow-500', 'text-black', 'font-semibold', 'cursor-pointer');
+                            dayElem.addEventListener('click', () => {
+                                window.dispatchEvent(new CustomEvent('invalid-date-clicked', {
+                                    detail: {
+                                        date: dateOnly.toISOString().split('T')[0]
+                                    }
+                                }));
+                            });
+                        }
                     }
                 }
 
