@@ -39,35 +39,72 @@
 
         /* Hover effect for valid dates */
         .flatpickr-day:hover {
-            background-color: rgba(255, 255, 0, 0.3); /* Yellow with transparency */
-            color: #333; /* Dark text color */
-            cursor: pointer; /* Ensure the pointer cursor is shown */
+            background-color: rgba(255, 255, 0, 0.3);
+            /* Yellow with transparency */
+            color: #333;
+            /* Dark text color */
+            cursor: pointer;
+            /* Ensure the pointer cursor is shown */
         }
 
         /* Hover effect for valid dates with yellow background */
         .flatpickr-day.bg-yellow-500:hover {
-            background-color: rgba(255, 255, 0, 0.5); /* Lighter yellow for hover */
-            color: #333; /* Dark text color */
+            background-color: rgba(255, 255, 0, 0.5);
+            /* Lighter yellow for hover */
+            color: #333;
+            /* Dark text color */
         }
 
         /* Hover effect for invalid dates with transparent green background */
         .flatpickr-day.bg-green-500:hover {
-            background-color: rgba(0, 255, 0, 0.3); /* Green with transparency */
-            color: #155724; /* Dark green text */
+            background-color: rgba(0, 255, 0, 0.3);
+            /* Green with transparency */
+            color: #155724;
+            /* Dark green text */
         }
 
         /* Hover effect for invalid dates with transparent yellow background */
         .flatpickr-day.bg-yellow-500 {
-            background-color: rgba(255, 255, 0, 0.3); /* Yellow with transparency */
+            background-color: rgba(255, 255, 0, 0.3);
+            /* Yellow with transparency */
             color: black;
         }
 
+        /* Hover effect for valid green dates */
         .flatpickr-day.bg-green-500 {
-            background-color: rgba(0, 128, 0, 0.3); /* Green with transparency */
+            background-color: rgba(0, 128, 0, 0.3);
+            /* Green with transparency */
             color: black;
         }
 
-        
+        /* Hover effect for disabled (past) dates */
+        .flatpickr-day.bg-gray-200:hover {
+            background-color: rgba(169, 169, 169, 0.4);
+            /* Light gray with transparency */
+            color: #808080;
+            /* Gray text */
+            cursor: not-allowed;
+            /* Disabled cursor */
+        }
+
+        .flatpickr-day.selected {
+            background-color: rgba(0, 128, 0, 0.7);
+            /* Darker green for selected date */
+            color: white;
+            /* White text for contrast */
+            border: 1px solid black;
+        }
+
+        .flatpickr-day {
+            max-width: 10%;
+            margin: 8px
+        }
+
+        @media (max-width: 768px) {
+            .flatpickr-day {
+                max-width: 15%;
+            }
+        }
     </style>
     <div
         wire:ignore
@@ -78,7 +115,7 @@
             x-init="flatpickr"
             class="peer w-full">
     </div>
-   
+
 
 </div>
 
@@ -133,20 +170,12 @@
                 dateFormat: 'Y-m-d',
                 inline: true,
                 minDate: minFirstPayDate,
-                showMonths: 1,
-                showDaysOutsideMonth: false,
-                disable: [
-                    // Disable all dates before today
-                    (date) => {
-                        const today = new Date();
-                        return date < today.setHours(0, 0, 0, 0); // Disable all previous dates
-                    }
-                ],
                 onDayCreate: function(dObj, dStr, fp, dayElem) {
                     const date = dayElem.dateObj;
                     const min = new Date(minFirstPayDate);
                     const max = new Date(maxFirstPayDate);
 
+                    // Strip time portion
                     const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                     const minOnly = new Date(min.getFullYear(), min.getMonth(), min.getDate());
                     const maxOnly = new Date(max.getFullYear(), max.getMonth(), max.getDate());
@@ -156,17 +185,6 @@
                         dayElem.style.visibility = "hidden"; // 👈 Hide the day completely
                         return;
                     }
-
-                    // Reset any styles first
-                    dayElem.className = "flatpickr-day"; // Reset classes first to avoid duplication
-
-                    // Now add circle styles
-                    dayElem.classList.add(
-                        'flex', 'items-center', 'justify-center',
-                        'rounded-full', 'w-10', 'h-10',
-                        'text-sm', 'mx-auto', 'my-1'
-                    );  
-                    //dayElem.style.flex = 'none';
 
                     if (dateOnly >= minOnly && dateOnly <= maxOnly) {
                         dayElem.classList.add('bg-green-500', 'text-black', 'font-semibold');
@@ -181,7 +199,6 @@
                         });
                     }
                 }
-
 
             })
         },
