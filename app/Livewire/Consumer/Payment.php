@@ -121,10 +121,6 @@ class Payment extends Component
     public function makePayment(): void
     {
         $validatedData = $this->form->validate();
-        if ($validatedData['save_card']) {
-            $this->saveCard($validatedData);
-        }
-        dd('HI');
         DB::beginTransaction();
 
         try {
@@ -222,7 +218,7 @@ class Payment extends Component
         ])->title($title);
     }
 
-    protected function saveCard($formData)
+    protected function saveCard(array $formData):void
     {
         try {
             $this->consumer->savedCards()->create([
@@ -237,13 +233,13 @@ class Payment extends Component
         }
     }
 
-    public function getDecryptedCardNumber($encryptedCardData)
+    public function getDecryptedCardNumber(string $encryptedCardData): string
     {
-        return decrypt($encryptedCardData);  // Decrypt card data using Laravel's Crypt facade
+        return decrypt($encryptedCardData); 
     }
 
 
-    public function deleteCard($cardId)
+    public function deleteCard(int $cardId): void
     {
         try {
             $card = $this->consumer->savedCards()->findOrFail($cardId);

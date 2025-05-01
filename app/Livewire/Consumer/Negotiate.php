@@ -38,7 +38,6 @@ class Negotiate extends Component
     protected ConsumerNegotiationService $consumerNegotiationService;
 
     public float $minimumPpaDiscountedAmount;
-
     public float $minimumPifDiscountedAmount;
 
     public function __construct()
@@ -168,13 +167,12 @@ class Negotiate extends Component
             ->title(__('Let\'s Negotiate'));
     }
 
-    public function sendToCreditor()
+    public function sendToCreditor(): void
     {
         $validatedData = $this->validate([
             'first_pay_date' => ['required']
         ]);
         $installmentDetails = $this->discountService->fetchInstallmentDetails($this->consumer);
-
 
         $newOfferCount = $this->consumerNegotiationService->updateConsumerNegotiation(
             $this->consumer,

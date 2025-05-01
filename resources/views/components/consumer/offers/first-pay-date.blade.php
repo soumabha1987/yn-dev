@@ -40,70 +40,41 @@
         .flatpickr-day.nextMonthDay {
             color: rgba(72, 72, 72, 0.7)
         }
-
-        /* Hover effect for valid dates */
         .flatpickr-day:hover {
             background-color: rgba(255, 255, 0, 0.3);
-            /* Yellow with transparency */
             color: #333;
-            /* Dark text color */
             cursor: pointer;
-            /* Ensure the pointer cursor is shown */
         }
-
-        /* Hover effect for valid dates with yellow background */
         .flatpickr-day.bg-yellow-500:hover {
             background-color: rgba(255, 255, 0, 0.5);
-            /* Lighter yellow for hover */
             color: #333;
-            /* Dark text color */
         }
-
-        /* Hover effect for invalid dates with transparent green background */
         .flatpickr-day.bg-green-500:hover {
             background-color: rgba(0, 255, 0, 0.3);
-            /* Green with transparency */
             color: #155724;
-            /* Dark green text */
         }
-
-        /* Hover effect for invalid dates with transparent yellow background */
         .flatpickr-day.bg-yellow-500 {
             background-color: rgba(255, 255, 0, 0.3);
-            /* Yellow with transparency */
             color: black;
         }
-
-        /* Hover effect for valid green dates */
         .flatpickr-day.bg-green-500 {
             background-color: rgba(0, 128, 0, 0.3);
-            /* Green with transparency */
             color: black;
         }
-
-        /* Hover effect for disabled (past) dates */
         .flatpickr-day.bg-gray-200:hover {
             background-color: rgba(169, 169, 169, 0.4);
-            /* Light gray with transparency */
             color: #808080;
-            /* Gray text */
             cursor: not-allowed;
-            /* Disabled cursor */
         }
-
         .flatpickr-day.selected {
             background-color: rgba(0, 128, 0, 0.7);
-            /* Darker green for selected date */
             color: white;
-            /* White text for contrast */
             border: 1px solid black;
         }
-
         .flatpickr-day {
             max-width: 10%;
             margin: 8px
         }
-
         @media (max-width: 768px) {
             .flatpickr-day {
                 max-width: 15%;
@@ -128,8 +99,6 @@
          invalidDate = e.detail.date; 
          modalOpen = true; 
      })">
-
-    <!-- Modal -->
     <div x-show="modalOpen" x-transition class="fixed inset-0 flex items-center justify-center bg-black inset-0 bg-slate-900/60 transition-opacity z-50">
         <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg text-center">
             <p class="text-red-600 font-semibold text-base mb-4">
@@ -155,9 +124,6 @@
     </div>
 </div>
 
-
-
-
 @script
 <script>
     Alpine.data('firstPayDate', (minFirstPayDate, maxFirstPayDate, modelable) => ({
@@ -179,19 +145,17 @@
                     const min = new Date(minFirstPayDate);
                     const max = new Date(maxFirstPayDate);
                     const currentDate = new Date();
-
-                    // Strip time portion
+                  
                     const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                     const minOnly = new Date(min.getFullYear(), min.getMonth(), min.getDate());
                     const maxOnly = new Date(max.getFullYear(), max.getMonth(), max.getDate());
 
                      if (dateOnly < currentDate) {
                         dayElem.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
-                        dayElem.style.pointerEvents = "none"; // Prevent selection
+                        dayElem.style.pointerEvents = "none"; 
                     } else {
-                        // ✅ Hide days outside current month
                         if (date.getMonth() !== fp.currentMonth) {
-                            dayElem.style.visibility = "hidden"; // 👈 Hide the day completely
+                            dayElem.style.visibility = "hidden";
                             return;
                         }
 

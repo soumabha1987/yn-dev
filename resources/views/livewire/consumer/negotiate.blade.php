@@ -80,12 +80,6 @@
                     </div>
                 </div>
 
-
-
-
-
-
-
                 <x-consumer.dialog>
                     <x-consumer.dialog.open>
                         <div

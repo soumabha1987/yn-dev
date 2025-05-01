@@ -39,17 +39,16 @@ class ConsumerNegotiationService
             ->first();
     }
 
-    // Put this function in a service class or helper utility
+    
     public function updateConsumerNegotiation(
-        $consumer,
+        Consumer $consumer,
         array $validatedData,
         bool $isOfferAccepted,
-        $minimumPifDiscountedAmount,
-        $minimumPpaDiscountedAmount
+        float $minimumPifDiscountedAmount,
+        float $minimumPpaDiscountedAmount
     ): ?int {
         $amount = (float) $validatedData['amount'];
-
-        // Apply the amount limits based on negotiation type
+        
         if ($amount > $minimumPifDiscountedAmount && $validatedData['negotiation_type'] === NegotiationType::PIF->value) {
             $amount = $minimumPifDiscountedAmount;
         }
@@ -66,7 +65,6 @@ class ConsumerNegotiationService
             [$installments, $lastInstallmentAmount] = $this->discountService->calculateInstallments($minimumPpaDiscountedAmount, $amount);
         }
 
-        // Update or create consumer negotiation
         ConsumerNegotiation::query()->updateOrCreate(
             [
                 'company_id' => $consumer->company_id,
@@ -86,13 +84,11 @@ class ConsumerNegotiationService
                 'last_month_amount' => $lastInstallmentAmount ? number_format((float) $lastInstallmentAmount, 2, thousands_separator: '') : null,
             ]
         );
-
-        // Refresh consumer
+        
         $consumer->refresh()->consumerNegotiation->fill([
             'offer_accepted' => $isOfferAccepted,
         ]);
-
-        // Update consumer status
+        
         $consumer->fill([
             'offer_accepted' => $isOfferAccepted,
             'status' => $isOfferAccepted ? ConsumerStatus::PAYMENT_ACCEPTED : ConsumerStatus::PAYMENT_SETUP,
@@ -121,9 +117,8 @@ class ConsumerNegotiationService
         $consumer->consumerNegotiation->save();
         $consumer->save();
 
-
         $newOfferCount = null;
-        // Update cache for new offer count
+        
         if (!$isOfferAccepted) {
             $newOfferCount = app(ConsumerService::class)->getCountOfNewOffer($consumer->company_id);
             Cache::put(
@@ -132,11 +127,8 @@ class ConsumerNegotiationService
                 now()->addHour(),
             );
         }
-
-        // Update campaign tracker
+        
         app(CampaignTrackerService::class)->updateTrackerCount($consumer, $campaignTrackerUpdateFieldName);
-
-        // Delete scheduled transactions
         app(ScheduleTransactionService::class)->deleteScheduled($consumer->id);
 
         return $newOfferCount;
