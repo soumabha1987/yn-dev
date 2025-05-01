@@ -45,9 +45,6 @@ enum ConsumerFields: string
     case PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE = 'pay_setup_discount_percent';
     case PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE = 'min_monthly_pay_percent';
     case PAYMENT_PLAN_MAX_DAYS_FIRST_PAY = 'max_days_first_pay';
-    case MINIMUM_SETTLEMENT_PERCENTAGE = 'minimum_settlement_percentage';
-    case MINIMUM_PAYMENT_PLAN_PERCENTAGE = 'minimum_payment_plan_percentage';
-    case MAX_FIRST_PAY_DAYS = 'max_first_pay_days';
     case PASSTHROUGH_FIELD_ONE = 'pass_through1';
     case PASSTHROUGH_FIELD_TWO = 'pass_through2';
     case PASSTHROUGH_FIELD_THREE = 'pass_through3';
@@ -83,9 +80,6 @@ enum ConsumerFields: string
             self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->name => 'Payment Plan - Bal Discount % (override Master/Sub Pay Term Offers)',
             self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->name => 'Payment Plan/Min. Monthly Payment % of Bal (override Master/Sub Pay Term Offers)',
             self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->name => 'Payment Plan/Max Days First Pay (override Master/Sub Pay Term Offers)',
-            self::MINIMUM_SETTLEMENT_PERCENTAGE->name => 'Minimum Settlement Percentage (override Master/Sub Pay Term Offers)',
-            self::MINIMUM_PAYMENT_PLAN_PERCENTAGE->name => 'Minimum Payment Plan (override Master/Sub Pay Term Offers)',
-            self::MAX_FIRST_PAY_DAYS->name => 'Max First Payment Date (override Master/Sub Pay Term Offers)',
             self::PASSTHROUGH_FIELD_ONE->name => 'Passthrough Field 1',
             self::PASSTHROUGH_FIELD_TWO->name => 'Passthrough Field 2',
             self::PASSTHROUGH_FIELD_THREE->name => 'Passthrough Field 3',
@@ -109,8 +103,10 @@ enum ConsumerFields: string
     /**
      * @return array<int, mixed>
      */
-    public function validate(?int $companyId = null): array
-    {
+    public function validate(
+        ?int $companyId = null,
+        ?bool $payTermsFieldsRequired = false,
+    ): array {
         return match ($this) {
             self::ACCOUNT_NUMBER => [
                 'required',
@@ -138,13 +134,10 @@ enum ConsumerFields: string
             self::MEMBER_ACCOUNT_NUMBER => ['required', 'string', 'min:2', 'max:50'],
             self::PHONE => ['required', 'phone:US'],
             self::CONSUMER_EMAIL => ['required', 'string', 'email:rfc,dns'],
-            self::PAY_IN_FULL_DISCOUNT_PERCENTAGE => ['nullable', 'integer', 'min:0', 'max:99'],
-            self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE => ['nullable', 'integer', 'min:0', 'max:99'],
-            self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE => ['nullable', 'integer', 'min:1', 'max:99'],
-            self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY => ['nullable', 'integer', 'min:1', 'max:1000'],
-            self::MINIMUM_SETTLEMENT_PERCENTAGE => ['nullable', 'integer', 'min:1', 'max:99'],
-            self::MINIMUM_PAYMENT_PLAN_PERCENTAGE => ['nullable', 'integer', 'min:1', 'max:99'],
-            self::MAX_FIRST_PAY_DAYS => ['nullable', 'integer', 'min:1', 'max:1000'],
+            self::PAY_IN_FULL_DISCOUNT_PERCENTAGE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:0', 'max:99'],
+            self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:0', 'max:99'],
+            self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:1', 'max:99'],
+            self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:1', 'max:1000'],
             self::SUBCLIENT_IDENTIFICATION_NUMBER => [
                 'nullable',
                 'string',
@@ -167,162 +160,159 @@ enum ConsumerFields: string
     {
         return match ($this) {
             self::ACCOUNT_NUMBER => [
-                self::ACCOUNT_NUMBER->value . '.required' => __('The OrgAccount# is required.'),
+                self::ACCOUNT_NUMBER->value . '.required' => __('Missing the OrgAccount#.'),
                 self::ACCOUNT_NUMBER->value . '.unique' => __('OrgAccount# is active in another YN member account.'),
-                self::ACCOUNT_NUMBER->value . '.min' => __('OrigAcct# must be at least 2 characters.'),
-                self::ACCOUNT_NUMBER->value . '.max' => __('OrigAcct# must not exceed 50 characters.'),
+                self::ACCOUNT_NUMBER->value . '.min' => __('OrigAcct# is less than 2 characters.'),
+                self::ACCOUNT_NUMBER->value . '.max' => __('OrigAcct# is greater than 50 characters.'),
             ],
             self::ORIGINAL_ACCOUNT_NAME => [
-                self::ORIGINAL_ACCOUNT_NAME->value . '.required' => __('The MemberAcct# is required.'),
+                self::ORIGINAL_ACCOUNT_NAME->value . '.required' => __('Missing MemberAcct#'),
                 self::ORIGINAL_ACCOUNT_NAME->value . '.string' => __('MemberAcct# is not a string.'),
-                self::ORIGINAL_ACCOUNT_NAME->value . '.min' => __('MemberAcct# must be at least 2 characters.'),
-                self::ORIGINAL_ACCOUNT_NAME->value . '.max' => __('MemberAcct# must not exceed 50 characters.'),
+                self::ORIGINAL_ACCOUNT_NAME->value . '.min' => __('MemberAcct# is less than 2 characters'),
+                self::ORIGINAL_ACCOUNT_NAME->value . '.max' => __('MemberAcct# is greater than 50 characters.'),
             ],
             self::FIRST_NAME => [
-                self::FIRST_NAME->value . '.required' => __('The FirstName is required.'),
+                self::FIRST_NAME->value . '.required' => __('Missing FirstName.'),
                 self::FIRST_NAME->value . '.string' => __('FirstName is not a string.'),
-                self::FIRST_NAME->value . '.min' => __('FirstName must be at least 2 characters.'),
-                self::FIRST_NAME->value . '.max' => __('FirstName must not exceed 25 characters.'),
+                self::FIRST_NAME->value . '.min' => __('FirstName less than 2 characters'),
+                self::FIRST_NAME->value . '.max' => __('First name greater than 25 characters'),
             ],
             self::LAST_NAME => [
-                self::LAST_NAME->value . '.required' => __('The LastName is required.'),
-                self::LAST_NAME->value . '.string' => __('LastName must be a string.'),
+                self::LAST_NAME->value . '.required' => __('Missing LastName.'),
+                self::LAST_NAME->value . '.string' => __('LastName is not a string.'),
                 self::LAST_NAME->value . '.min' => __('LastName less than 2 characters.'),
-                self::LAST_NAME->value . '.max' => __('LastName must not exceed 30 characters.'),
+                self::LAST_NAME->value . '.max' => __('LastName is greater than 30 characters.'),
             ],
             self::DATE_OF_BIRTH => [
-                self::DATE_OF_BIRTH->value . '.required' => __('The DOB is required. '),
-                self::DATE_OF_BIRTH->value . '.date' => __('The DOB format does not match the expected profile.'),
+                self::DATE_OF_BIRTH->value . '.required' => __('Missing DOB '),
+                self::DATE_OF_BIRTH->value . '.date' => __('DOB format does not match this header profile'),
             ],
             self::LAST_FOUR_SSN => [
-                self::LAST_FOUR_SSN->value . '.required' => __('The SSN is required.'),
-                self::LAST_FOUR_SSN->value . '.digits_between' => __('SSN must be either 4 or 9 digits.'),
+                self::LAST_FOUR_SSN->value . '.required' => __('MIssing SSN.'),
+                self::LAST_FOUR_SSN->value . '.digits_between' => __('SSN is not 4 OR 9 numbers.'),
             ],
             self::CURRENT_BALANCE => [
-                self::CURRENT_BALANCE->value . '.required' => __('The CurrentBalance is required.'),
-                self::CURRENT_BALANCE->value . '.numeric' => __('CurrentBalance must be a number.'),
-                self::CURRENT_BALANCE->value . '.gt' => __('CurrentBalance must be greater than $0.00.'),
-                self::CURRENT_BALANCE->value . '.decimal' => __('CurrentBalance contains invalid characters.'),
+                self::CURRENT_BALANCE->value . '.required' => __('Missing CurrentBalance.'),
+                self::CURRENT_BALANCE->value . '.numeric' => __('CurrentBalance isn\'t a number.'),
+                self::CURRENT_BALANCE->value . '.gt' => __('CurrentBalance field less than $0.00'),
+                self::CURRENT_BALANCE->value . '.decimal' => __('CurrentBalance has special characters.'),
             ],
             self::REFERENCE_NUMBER => [
-                self::REFERENCE_NUMBER->value . '.string' => __('ReferenceNumber must be a string.'),
-                self::REFERENCE_NUMBER->value . '.min' => __('ReferenceNumber must have at least 1 character.'),
-                self::REFERENCE_NUMBER->value . '.max' => __('ReferenceNumber must not exceed 100 characters.'),
+                self::REFERENCE_NUMBER->value . '.string' => __('ReferenceNumber field is not a string.'),
+                self::REFERENCE_NUMBER->value . '.min' => __('ReferenceNumber has less than 1 character.'),
+                self::REFERENCE_NUMBER->value . '.max' => __('ReferenceNumber has more than 100 characters.'),
             ],
             self::STATEMENT_ID_NUMBER => [
-                self::STATEMENT_ID_NUMBER->value . '.string' => __('StatementID# must be a string.'),
-                self::STATEMENT_ID_NUMBER->value . '.min' => __('StatementID# must have at least 1 character.'),
-                self::STATEMENT_ID_NUMBER->value . '.max' => __('StatementID# must not exceed 100 characters.'),
+                self::STATEMENT_ID_NUMBER->value . '.string' => __('StatementID# is not a string.'),
+                self::STATEMENT_ID_NUMBER->value . '.min' => __('StatementID# has less than 1 character.'),
+                self::STATEMENT_ID_NUMBER->value . '.max' => __('StatementID# has more than 100 characters.'),
             ],
             self::PLACEMENT_DATE => [
-                self::PLACEMENT_DATE->value . '.date' => __('PlacementDate format does not match the required header profile.'),
+                self::PLACEMENT_DATE->value . '.date' => __('PlacementDate format does not match this header profile'),
             ],
             self::EXPIRY_DATE => [
-                self::EXPIRY_DATE->value . '.date' => __('ExpiryDate format does not match the required header profile.'),
+                self::EXPIRY_DATE->value . '.date' => __('ExpiryDate format format does not match this header profile.'),
             ],
             self::ADDRESS_LINE_ONE => [
-                self::ADDRESS_LINE_ONE->value . '.required' => __('The Address1  is required.'),
-                self::ADDRESS_LINE_ONE->value . '.string' => __('Address1 must be a string.'),
-                self::ADDRESS_LINE_ONE->value . '.min' => __('Address1 must have at least 2 characters.'),
-                self::ADDRESS_LINE_ONE->value . '.max' => __('Address1 must not exceed 100 characters.'),
+                self::ADDRESS_LINE_ONE->value . '.required' => __('Missing Address1.'),
+                self::ADDRESS_LINE_ONE->value . '.string' => __('Address1 is not a string.'),
+                self::ADDRESS_LINE_ONE->value . '.min' => __('Address1 has less than 2 characters.'),
+                self::ADDRESS_LINE_ONE->value . '.max' => __('Address1 has more than 100 characters.'),
             ],
             self::ADDRESS_LINE_TWO => [
-                self::ADDRESS_LINE_TWO->value . '.required' => __('The Address2  is required.'),
-                self::ADDRESS_LINE_TWO->value . '.string' => __('Address2 must be a string.'),
-                self::ADDRESS_LINE_TWO->value . '.min' => __('Address2 must have at least 2 characters.'),
-                self::ADDRESS_LINE_TWO->value . '.max' => __('Address2 must not exceed 100 characters.'),
+                self::ADDRESS_LINE_TWO->value . '.required' => __('Missing Address2.'),
+                self::ADDRESS_LINE_TWO->value . '.string' => __('Address2 is not a string.'),
+                self::ADDRESS_LINE_TWO->value . '.min' => __('Address2 has less than 2 characters.'),
+                self::ADDRESS_LINE_TWO->value . '.max' => __('Address2 has more than 100 characters.'),
             ],
             self::CITY => [
-                self::CITY->value . '.required' => __('The City  is required.'),
-                self::CITY->value . '.string' => __('City must be a string.'),
-                self::CITY->value . '.min' => __('City must have at least 2 characters.'),
-                self::CITY->value . '.max' => __('City must not exceed 30 characters.'),
+                self::CITY->value . '.required' => __('Missing City.'),
+                self::CITY->value . '.string' => __('City is not a string.'),
+                self::CITY->value . '.min' => __('City has less than 2 characters.'),
+                self::CITY->value . '.max' => __('City has more than 30 characters.'),
             ],
             self::STATE => [
-                self::STATE->value . '.required' => __('The State  is required.'),
-                self::STATE->value . '.string' => __('State must be a string.'),
-                self::STATE->value . '.max' => __('State must not exceed 3 letters.'),
+                self::STATE->value . '.required' => __('Missing State.'),
+                self::STATE->value . '.string' => __('State is not a string.'),
+                self::STATE->value . '.max' => __('State has more than 3 letters.'),
             ],
             self::ZIP => [
-                self::ZIP->value . '.required' => __('The ZipCode  is required.'),
-                self::ZIP->value . '.regex' => __('ZipCode is not a valid US ZIP code.'),
+                self::ZIP->value . '.required' => __('Missing ZipCode.'),
+                self::ZIP->value . '.regex' => __('ZipCode is not a valid US zipcode.'),
             ],
             self::MEMBER_ACCOUNT_NUMBER => [
-                self::MEMBER_ACCOUNT_NUMBER->value . '.required' => __('The MemberAcct#  is required.'),
-                self::MEMBER_ACCOUNT_NUMBER->value . '.string' => __('MemberAcct# must be a string.'),
-                self::MEMBER_ACCOUNT_NUMBER->value . '.min' => __('MemberAcct# must have at least 2 characters.'),
-                self::MEMBER_ACCOUNT_NUMBER->value . '.max' => __('MemberAcct# must not exceed 50 characters.'),
+                self::MEMBER_ACCOUNT_NUMBER->value . '.required' => __('Missing MemberAcct#'),
+                self::MEMBER_ACCOUNT_NUMBER->value . '.string' => __('MemberAcct# is not a string.'),
+                self::MEMBER_ACCOUNT_NUMBER->value . '.min' => __('MemberAcct# is less than 2 characters.'),
+                self::MEMBER_ACCOUNT_NUMBER->value . '.max' => __('MemberAcct# is greater than 50 characters.'),
             ],
             self::PHONE => [
-                self::PHONE->value . '.required' => __('The mobile number field is required.'),
-                self::PHONE->value . '.phone' => __('The mobile number is invalid.'),
+                self::PHONE->value . '.required' => __('Missing mobile number.'),
+                self::PHONE->value . '.phone' => __('Invalid mobile number.'),
             ],
             self::CONSUMER_EMAIL => [
-                self::CONSUMER_EMAIL->value . '.required' => __('The email field is required.'),
-                self::CONSUMER_EMAIL->value . '.string' => __('Email must be a string.'),
-                self::CONSUMER_EMAIL->value . '.email' => __('Email address is invalid.'),
+                self::CONSUMER_EMAIL->value . '.required' => __('Missing email.'),
+                self::CONSUMER_EMAIL->value . '.string' => __('Email is not a string.'),
+                self::CONSUMER_EMAIL->value . '.email' => __('Invalid email address.'),
             ],
             self::PAY_IN_FULL_DISCOUNT_PERCENTAGE => [
-                self::PAY_IN_FULL_DISCOUNT_PERCENTAGE->value . '.min' => __('PIF Balance Discount Percentage must have at least 1 character.'),
-                self::PAY_IN_FULL_DISCOUNT_PERCENTAGE->value . '.max' => __('PIF Balance Discount Percentage must be a whole number between 0 and 99.'),
+                self::PAY_IN_FULL_DISCOUNT_PERCENTAGE->value . '.min' => __('PIF Bal Discount Percent is less than 1 character.'),
+                self::PAY_IN_FULL_DISCOUNT_PERCENTAGE->value . '.max' => __('PIF Bal Discount Percent is not a whole number between 0 and 99.'),
             ],
             self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE => [
-                self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->value . '.min' => __('Payment Plan Balance Discount Percentage must have at least 1 character.'),
-                self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->value . '.max' => __('Payment Plan Balance Discount Percentage must be a whole number between 0 and 99.'),
+                self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->value . '.min' => __('PayPlan Bal Discount Percent is less than 1 character.'),
+                self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->value . '.max' => __('PayPlan Bal Discount Percent is not a whole number between 0 and 99.'),
             ],
             self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE => [
-                self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->value . '.min' => __('Minimum Monthly Payment Percentage must have at least 1 character.'),
-                self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->value . '.max' => __('Minimum Monthly Payment Percentage must be a whole number between 1 and 99.'),
+                self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->value . '.min' => __('Min Monthly Payment % must be at least 1 character.'),
+                self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->value . '.max' => __('Min Monthly Payment % is not a whole number between 1 and 99.'),
             ],
             self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY => [
-                self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->value . '.min' => __('Max Days for 1st Payment cannot be less than 1.'),
-                self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->value . '.max' => __('Max Days for 1st Payment cannot exceed 1,000 days.'),
+                self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->value . '.min' => __('Max Days - 1st Payment is less than 1.'),
+                self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->value . '.max' => __('Max Days - 1st Payment is greater than 1,000 days.'),
             ],
             self::SUBCLIENT_IDENTIFICATION_NUMBER => [
-                self::SUBCLIENT_IDENTIFICATION_NUMBER->value . '.string' => __('SubClient ID must be a string.'),
+                self::SUBCLIENT_IDENTIFICATION_NUMBER->value . '.string' => __('SubClientID is not a string.'),
             ],
             self::SUBCLIENT_NAME => [
-                self::SUBCLIENT_NAME->value . '.string' => __('SubClient Name must be a string.'),
+                self::SUBCLIENT_NAME->value . '.string' => __('SubClientName is not a string.'),
             ],
             self::SUBCLIENT_ACCOUNT_NUMBER => [
-                self::SUBCLIENT_ACCOUNT_NUMBER->value . '.string' => __('SubClient Account Number must be a string.'),
+                self::SUBCLIENT_ACCOUNT_NUMBER->value . '.string' => __('SubClientAccount# is not a string.'),
             ],
             self::PASSTHROUGH_FIELD_ONE => [
-                self::PASSTHROUGH_FIELD_ONE->value . '.string' => __('Passthrough Field 1 must be a string.'),
-                self::PASSTHROUGH_FIELD_ONE->value . '.max' => __('Passthrough Field 1 cannot exceed 150 characters.'),
+                self::PASSTHROUGH_FIELD_ONE->value . '.string' => __('PassthroughField1 is not a string.'),
+                self::PASSTHROUGH_FIELD_ONE->value . '.max' => __('PassthroughField1 has more than 150 characters.'),
             ],
             self::PASSTHROUGH_FIELD_TWO => [
-                self::PASSTHROUGH_FIELD_TWO->value . '.string' => __('Passthrough Field 2 must be a string.'),
-                self::PASSTHROUGH_FIELD_TWO->value . '.max' => __('Passthrough Field 2 cannot exceed 150 characters.'),
+                self::PASSTHROUGH_FIELD_TWO->value . '.string' => __('PassthroughField 2 is not a string.'),
+                self::PASSTHROUGH_FIELD_TWO->value . '.max' => __('Passthrough Field 2 has more than 150 characters.'),
             ],
             self::PASSTHROUGH_FIELD_THREE => [
-                self::PASSTHROUGH_FIELD_THREE->value . '.string' => __('Passthrough Field 3 must be a string.'),
-                self::PASSTHROUGH_FIELD_THREE->value . '.max' => __('Passthrough Field 3 cannot exceed 150 characters.'),
+                self::PASSTHROUGH_FIELD_THREE->value . '.string' => __('Passthrough Field 3 is not a string.'),
+                self::PASSTHROUGH_FIELD_THREE->value . '.max' => __('Passthrough Field 3 has more than 150 characters.'),
             ],
             self::PASSTHROUGH_FIELD_FOUR => [
-                self::PASSTHROUGH_FIELD_FOUR->value . '.string' => __('Passthrough Field 4 must be a string.'),
-                self::PASSTHROUGH_FIELD_FOUR->value . '.max' => __('Passthrough Field 4 cannot exceed 150 characters.'),
+                self::PASSTHROUGH_FIELD_FOUR->value . '.string' => __('Passthrough Field 4 is not a string.'),
+                self::PASSTHROUGH_FIELD_FOUR->value . '.max' => __('Passthrough Field 4 has more than 150 characters.'),
             ],
             self::PASSTHROUGH_FIELD_FIVE => [
-                self::PASSTHROUGH_FIELD_FIVE->value . '.string' => __('Passthrough Field 5 must be a string.'),
-                self::PASSTHROUGH_FIELD_FIVE->value . '.max' => __('Passthrough Field 5 cannot exceed 150 characters.'),
+                self::PASSTHROUGH_FIELD_FIVE->value . '.string' => __('Passthrough Field 5 is not a string.'),
+                self::PASSTHROUGH_FIELD_FIVE->value . '.max' => __('Passthrough Field 5 has more than 150 characters.'),
             ],
-            default => [],
         };
     }
 
-    public function updateValidate(bool $isPpaBalanceDiscountPercentage, bool $isMinMonthlyPercentage): array
-    {
+    public function updateValidate(
+        bool $payTermsFieldsRequired,
+    ): array {
         return match ($this) {
             self::PHONE => ['nullable', 'phone:US'],
             self::CONSUMER_EMAIL => ['nullable', 'string', 'email:rfc,dns'],
-            self::PAY_IN_FULL_DISCOUNT_PERCENTAGE => ['nullable', 'integer', 'min:0', 'max:99'],
-            self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE => ['nullable', Rule::requiredIf($isMinMonthlyPercentage), 'integer', 'min:0', 'max:99'],
-            self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE => ['nullable', Rule::requiredIf($isPpaBalanceDiscountPercentage), 'integer', 'min:1', 'max:99'],
-            self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY => ['nullable', 'integer', 'min:1', 'max:1000'],
-            self::MINIMUM_SETTLEMENT_PERCENTAGE => ['nullable', 'integer', 'min:1', 'max:99'],
-            self::MINIMUM_PAYMENT_PLAN_PERCENTAGE => ['nullable', 'integer', 'min:1', 'max:99'],
-            self::MAX_FIRST_PAY_DAYS => ['nullable', 'integer', 'min:1', 'max:1000'],
+            self::PAY_IN_FULL_DISCOUNT_PERCENTAGE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:0', 'max:99'],
+            self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:0', 'max:99'],
+            self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:1', 'max:99'],
+            self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY => ['nullable', Rule::requiredIf($payTermsFieldsRequired), 'integer', 'min:1', 'max:1000'],
             default => [],
         };
     }
@@ -378,9 +368,19 @@ enum ConsumerFields: string
             self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->displayName(),
             self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->displayName(),
             self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->displayName(),
-            self::MINIMUM_SETTLEMENT_PERCENTAGE->displayName(),
-            self::MINIMUM_PAYMENT_PLAN_PERCENTAGE->displayName(),
-            self::MAX_FIRST_PAY_DAYS->displayName(),
+        ];
+    }
+
+    /**
+     * @return array<string>
+     */
+    public static function getPayTermsOfferFields(): array
+    {
+        return [
+            self::PAY_IN_FULL_DISCOUNT_PERCENTAGE->displayName(),
+            self::PAYMENT_PLAN_BALANCE_DISCOUNT_PERCENTAGE->displayName(),
+            self::PAYMENT_PLAN_MIN_MONTHLY_PAYMENT_PERCENTAGE_OF_BALANCE->displayName(),
+            self::PAYMENT_PLAN_MAX_DAYS_FIRST_PAY->displayName(),
         ];
     }
 }
