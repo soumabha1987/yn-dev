@@ -120,7 +120,7 @@ class PaymentForm extends Form
             'is_terms_accepted' => ['required', 'accepted'],
             'tilled_response' => ['sometimes', 'array'],
             'payment_method_id' => ['sometimes', 'string'],
-            'save_card' => ['nullable', 'boolean']
+            'save_card' => ['required', 'boolean']
         ];
     }
 }

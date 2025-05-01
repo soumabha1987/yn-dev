@@ -161,6 +161,6 @@ class Consumer extends Model implements AuthenticatableContract, AuthMustVerifyE
 
     public function savedCards(): HasMany
     {
-        return $this->hasMany(SavedCards::class, 'consumer_id');
+        return $this->hasMany(SavedCard::class, 'consumer_id');
     }
 }

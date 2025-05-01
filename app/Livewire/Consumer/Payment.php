@@ -210,7 +210,6 @@ class Payment extends Component
                 $this->consumer->subclient_id
             )?->content ?? '',
             'creditorDetails' => $this->setCreditorDetails($this->consumer),
-            'consumerNegotiation' => $negotiation,
             'accountBalance' => $accountBalance,
             'installments' => $installments,
             'savedCards' => $savedCards
@@ -242,11 +241,16 @@ class Payment extends Component
     public function deleteCard(int $cardId): void
     {
         try {
-            $card = $this->consumer->savedCards()->findOrFail($cardId);
-            $card->delete();
-            $this->success(__('Card deleted successfully.'));
-        } catch (\Exception $e) {
-            $this->error(__('Failed to delete the card.'));
+            $deleted = $this->consumer->savedCards()->where('id', $cardId)->delete();
+
+            if ($deleted) {
+                $this->success(__('Card deleted successfully.'));
+            } else {
+                $this->error(__('Card not found or already deleted.'));
+            }
+        } catch (\Throwable $e) {
+            $this->error(__('Failed to delete the card due to a system error.'));
         }
     }
+
 }

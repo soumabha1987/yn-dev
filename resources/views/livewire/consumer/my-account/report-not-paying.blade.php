@@ -5,10 +5,6 @@
                 <span class="font-bold text-red-500 hover:underline cursor-pointer">
                     {{ __('Click here') }}
                 </span>
-            {{-- @elseif ($view === 'my-account')
-                <x-consumer.menu.item>
-                    {{ __('Report Not Paying') }}
-                </x-consumer.menu.item> --}}
             @elseif ($view === 'view-offer')
                 <button
                     type="button"

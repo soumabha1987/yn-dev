@@ -94,22 +94,20 @@
 
 </div>
 
-<div x-data="{ modalOpen: false, invalidDate: null }"
-    x-init="window.addEventListener('invalid-date-clicked', e => { 
-         invalidDate = e.detail.date; 
-         modalOpen = true; 
-     })">
+<div x-data="invalidDateModal" x-init="init">
     <div x-show="modalOpen" x-transition class="fixed inset-0 flex items-center justify-center bg-black inset-0 bg-slate-900/60 transition-opacity z-50">
         <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg text-center">
             <p class="text-red-600 font-semibold text-base mb-4">
                 Your selected 1st pay date is out of the Creditor's 1st pay date range
             </p>
             <div class="flex justify-center gap-4">
-                <button
+                <x-form.button
+                    type="button"
+                    variant="warning"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded"
                     @click="modalOpen = false">
                     Change Date
-                </button>
+                </x-form.button>
                 <x-form.button
                     wire:click="sendToCreditor"
                     wire:loading.attr="disabled"
@@ -118,67 +116,77 @@
                     variant="primary">
                     <span>{{ __('Send to Creditor') }}</span>
                 </x-form.button>
-
             </div>
         </div>
     </div>
 </div>
 
 @script
-<script>
-    Alpine.data('firstPayDate', (minFirstPayDate, maxFirstPayDate, modelable) => ({
-        flatpickrInstance: null,
-        init() {
-            this.$wire.$watch(modelable, (newVal) => {
-                if (newVal === '') {
-                    this.flatpickrInstance?.clear();
-                }
-            });
-        },
-        flatpickr() {
-            this.flatpickrInstance = window.flatpickr(this.$el, {
-                dateFormat: 'Y-m-d',
-                inline: true,
-                minDate: minFirstPayDate,
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const date = dayElem.dateObj;
-                    const min = new Date(minFirstPayDate);
-                    const max = new Date(maxFirstPayDate);
-                    const currentDate = new Date();
-                  
-                    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                    const minOnly = new Date(min.getFullYear(), min.getMonth(), min.getDate());
-                    const maxOnly = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    <script>
+        Alpine.data('firstPayDate', (minFirstPayDate, maxFirstPayDate, modelable) => ({
+            flatpickrInstance: null,
+            init() {
+                this.$wire.$watch(modelable, (newVal) => {
+                    if (newVal === '') {
+                        this.flatpickrInstance?.clear();
+                    }
+                });
+            },
+            flatpickr() {
+                this.flatpickrInstance = window.flatpickr(this.$el, {
+                    dateFormat: 'Y-m-d',
+                    inline: true,
+                    minDate: minFirstPayDate,
+                    onDayCreate: function(dObj, dStr, fp, dayElem) {
+                        const date = dayElem.dateObj;
+                        const min = new Date(minFirstPayDate);
+                        const max = new Date(maxFirstPayDate);
+                        const currentDate = new Date();
+                    
+                        const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                        const minOnly = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+                        const maxOnly = new Date(max.getFullYear(), max.getMonth(), max.getDate());
 
-                     if (dateOnly < currentDate) {
-                        dayElem.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
-                        dayElem.style.pointerEvents = "none"; 
-                    } else {
-                        if (date.getMonth() !== fp.currentMonth) {
-                            dayElem.style.visibility = "hidden";
-                            return;
-                        }
-
-                        if (dateOnly >= minOnly && dateOnly <= maxOnly) {
-                            dayElem.classList.add('bg-green-500', 'text-black', 'font-semibold');
+                        if (dateOnly < currentDate) {
+                            dayElem.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
+                            dayElem.style.pointerEvents = "none"; 
                         } else {
-                            dayElem.classList.add('bg-yellow-500', 'text-black', 'font-semibold', 'cursor-pointer');
-                            dayElem.addEventListener('click', () => {
-                                window.dispatchEvent(new CustomEvent('invalid-date-clicked', {
-                                    detail: {
-                                        date: dateOnly.toISOString().split('T')[0]
-                                    }
-                                }));
-                            });
+                            if (date.getMonth() !== fp.currentMonth) {
+                                dayElem.style.visibility = "hidden";
+                                return;
+                            }
+
+                            if (dateOnly >= minOnly && dateOnly <= maxOnly) {
+                                dayElem.classList.add('bg-green-500', 'text-black', 'font-semibold');
+                            } else {
+                                dayElem.classList.add('bg-yellow-500', 'text-black', 'font-semibold', 'cursor-pointer');
+                                dayElem.addEventListener('click', () => {
+                                    window.dispatchEvent(new CustomEvent('invalid-date-clicked', {
+                                        detail: {
+                                            date: dateOnly.toISOString().split('T')[0]
+                                        }
+                                    }));
+                                });
+                            }
                         }
                     }
-                }
 
-            })
-        },
-        destroy() {
-            this.flatpickrInstance?.destroy();
-        }
-    }))
-</script>
+                })
+            },
+            destroy() {
+                this.flatpickrInstance?.destroy();
+            }
+        }))
+
+        Alpine.data('invalidDateModal', () => ({
+            modalOpen: false,
+            invalidDate: null,
+            init() {
+                window.addEventListener('invalid-date-clicked', e => {
+                    this.invalidDate = e.detail.date;
+                    this.modalOpen = true;
+                });
+            }
+        }));
+    </script>
 @endscript

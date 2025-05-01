@@ -55,8 +55,7 @@
                                     @if ($payOffDiscountedAmount > 0)
                                     <div
                                         class="bg-error px-3 py-1 text-white text-xs+ font-bold text-center rounded-full mt-1">
-                                        {{ __(':off Off', ['off' => Number::percentage((float)
-                                        $payOffDiscountPercentage)]) }}
+                                        {{ __(':off Off', ['off' => Number::percentage((float) $payOffDiscountPercentage)]) }}
                                     </div>
                                     @endif
                                 </div>
@@ -70,8 +69,7 @@
                                     @if ($payOffDiscountedAmount > 0)
                                     <div
                                         class="bg-error px-2.5 sm:px-3 py-1.5 sm:py-2 text-white text-xs sm:text-sm text-center sm:text-left rounded-full mt-2">
-                                        {{ __(':off Off', ['off' => Number::percentage((float)
-                                        $payOffDiscountPercentage)]) }}
+                                        {{ __(':off Off', ['off' => Number::percentage((float) $payOffDiscountPercentage)]) }}
                                     </div>
                                     @endif
                                 </div>

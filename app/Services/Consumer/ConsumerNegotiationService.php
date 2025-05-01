@@ -19,7 +19,7 @@ use App\Services\ConsumerService;
 class ConsumerNegotiationService
 {
     public function __construct(
-        protected DiscountService $discountService
+        private readonly DiscountService $discountService
     ) {}
 
     public function deleteByConsumer(int $consumerId): void
@@ -161,7 +161,7 @@ class ConsumerNegotiationService
         return $isWithinMaxFirstPaymentDate && ($isMonthlyAmountSufficient || $isEnteredAmountSufficient);
     }
 
-    public function calculateMonthlyAmount(float $amount, string $installmentType): float
+    private function calculateMonthlyAmount(float $amount, string $installmentType): float
     {
         return $amount * match ($installmentType) {
             InstallmentType::BIMONTHLY->value => InstallmentType::BIMONTHLY->getAmountMultiplication(),

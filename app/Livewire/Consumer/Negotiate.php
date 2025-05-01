@@ -106,7 +106,7 @@ class Negotiate extends Component
 
     public function createSettlementOfferWithToday(): void
     {
-        $this->first_pay_date = now()->toDateString();
+        $this->first_pay_date = today()->toDateString();
         $this->createSettlementOffer();
     }
 

@@ -78,8 +78,8 @@ $amount = (float) $consumer->consumerNegotiation->payment_plan_current_balance;
                     <div class="flex flex-col text-black text-base mt-1 font-semibold">
                         <span>
                             {{ __(':type Payment: :amount', [
-                            'type' => Str::ucfirst($consumerNegotiation->installment_type->value),
-                            'amount' => Number::currency((float) $consumerNegotiation->monthly_amount)
+                            'type' => Str::ucfirst($consumer->consumerNegotiation->installment_type->value),
+                            'amount' => Number::currency((float) $consumer->consumerNegotiation->monthly_amount)
                             ]) }}
                         </span>
                     </div>
@@ -87,12 +87,12 @@ $amount = (float) $consumer->consumerNegotiation->payment_plan_current_balance;
                     <div class="flex flex-col text-black text-base mt-1 font-semibold">
                         <span>
                             {{ __(
-                            ':count Payments of :monthly' . ($consumerNegotiation->last_month_amount > 0 ? ' and one
+                            ':count Payments of :monthly' . ($consumer->consumerNegotiation->last_month_amount > 0 ? ' and one
                             last payment of :last' : ''),
                             [
-                            'count' => $consumerNegotiation->no_of_installments,
-                            'monthly' => Number::currency((float) $consumerNegotiation->monthly_amount),
-                            'last' => Number::currency((float) $consumerNegotiation->last_month_amount)
+                            'count' => $consumer->consumerNegotiation->no_of_installments,
+                            'monthly' => Number::currency((float) $consumer->consumerNegotiation->monthly_amount),
+                            'last' => Number::currency((float) $consumer->consumerNegotiation->last_month_amount)
                             ]
                             ) }}
                         </span>
