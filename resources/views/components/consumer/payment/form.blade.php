@@ -86,6 +86,21 @@
                                     </x-consumer.dialog.open>
 
                                     <x-consumer.dialog.panel :heading="__('Saved Cards')" class="h-[400px]">
+                                        @php
+                                            $maxCards = 3;
+                                            $savedCount = count($savedCards);
+                                            $progressPercent = ($savedCount / $maxCards) * 100;
+                                        @endphp
+
+                                        <div class="mb-4">
+                                            <div class="text-sm text-gray-700 mb-1">
+                                                Cards {{ $savedCount }} of {{ $maxCards }} saved
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $progressPercent }}%"></div>
+                                            </div>
+                                        </div>
+
                                         <div class="space-y-4 px-4 py-2 overflow-y-auto">
                                             @forelse ($savedCards as $card)
                                             <div
@@ -252,7 +267,10 @@
                 <div>
                     <label class="inline-flex items-start gap-2 mt-3">
                         <div class="shrink-0">
-                            <input wire:model="form.save_card" type="checkbox"
+                            <input 
+                                wire:model="form.save_card" 
+                                type="checkbox"
+                                @if(count($savedCards) >= 3) disabled @endif
                                 class="form-checkbox is-basic size-4 sm:size-4.5 my-1 rounded border-slate-400/70 bg-slate-100 checked:border-primary checked:bg-primary hover:border-primary focus:border-primary">
                         </div>
                         <span class="text-black text-sm lg:text-base">
