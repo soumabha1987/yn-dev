@@ -28,4 +28,9 @@ class ConsumerProfile extends Model
     {
         return $this->hasMany(Consumer::class);
     }
+
+    public function savedCards(): HasMany
+    {
+        return $this->hasMany(SavedCard::class, 'consumer_profile_id');
+    }
 }

@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Validator;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 #[Layout('components.consumer.app-layout')]
@@ -200,7 +201,7 @@ class Payment extends Component
 
         $customContentService = app(CustomContentService::class);
         $installments = $this->discountService->fetchInstallmentDetails($this->consumer);
-        $savedCards = $this->consumer->savedCards()->get();
+        $savedCards = $this->consumer->consumerProfile->savedCards()->get();
 
         return view('livewire.consumer.payment')->with([
             'minimumPifDiscountedAmount' => $minimumPifDiscountedAmount,
@@ -220,8 +221,8 @@ class Payment extends Component
     protected function saveCard(array $formData):void
     {
         try {
-            $this->consumer->savedCards()->create([
-                'consumer_id'         => $this->consumer->id,
+            $this->consumer->consumerProfile->savedCards()->create([
+                'consumer_profile_id'         => $this->consumer->consumer_profile_id,
                 'last4digit'          => substr(preg_replace('/\D/', '', $formData['card_number']), -4),
                 'card_holder_name'    => $formData['card_holder_name'],
                 'expiry'              => $formData['expiry'],
@@ -241,16 +242,22 @@ class Payment extends Component
     public function deleteCard(int $cardId): void
     {
         try {
-            $deleted = $this->consumer->savedCards()->where('id', $cardId)->delete();
-
+            $deleted = $this->consumer->consumerProfile->savedCards()->where('id', $cardId)->delete();
             if ($deleted) {
                 $this->success(__('Card deleted successfully.'));
+                $this->dispatch('card-deleted');
             } else {
                 $this->error(__('Card not found or already deleted.'));
             }
         } catch (\Throwable $e) {
             $this->error(__('Failed to delete the card due to a system error.'));
         }
+    }
+
+    #[On('card-deleted')]
+    public function reloadComponent()
+    {
+        $this->mount();
     }
 
 }
