@@ -130,6 +130,7 @@
                 <x-consumer.payment.form
                     :$merchants
                     :$isDisplayName
+                    :$savedCards
                 />
             @endif
         </div>

@@ -344,13 +344,14 @@ class ExternalPayment extends Component
 
     public function render(): View
     {
+        $savedCards = $this->consumer->consumerProfile->savedCards()->get();
         return view('livewire.consumer.external-payment')
-            ->with(
-                'monthlyPayableAmount',
-                $this->consumer->consumerNegotiation?->negotiation_type === NegotiationType::INSTALLMENT
-                ? $this->consumer->consumerNegotiation->monthly_amount
-                : 0.00
-            )
+            ->with([
+                'monthlyPayableAmount' => $this->consumer->consumerNegotiation?->negotiation_type === NegotiationType::INSTALLMENT
+                    ? $this->consumer->consumerNegotiation->monthly_amount
+                    : 0.00,
+                'savedCards' => $savedCards,
+            ])
             ->title(__('Donate to friends or family'));
     }
 }
